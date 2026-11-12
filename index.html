@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#008080">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Waste">
+<title>Waste · Historias y un Café</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='18' fill='%23008080'/%3E%3Cg fill='none' stroke='white' stroke-width='1.8'%3E%3Ccircle cx='18' cy='12' r='5.5'/%3E%3Ccircle cx='12' cy='22' r='5.5'/%3E%3Ccircle cx='24' cy='22' r='5.5'/%3E%3C/g%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#008080;--teal-d:#006666;--gold:#A57F50;--sage:#5C857D;--mint:#9FCFCA;--ink:#24272A;--paper:#EDEDED;
+  --bg:#f3f3ef;--card:#ffffff;--card2:#eeeeea;--text:#24272A;--muted:#6f7478;--line:#e2e2db;
+  --teal-soft:#e0efee;--gold-soft:#f4ece1;--danger:#c0392b;--shadow:0 2px 10px rgba(36,39,42,.07);
+}
+html.dark{
+  --bg:#121416;--card:#1d2023;--card2:#272a2e;--text:#ececea;--muted:#9aa0a4;--line:#33373b;
+  --teal:#12a0a0;--teal-d:#0d8484;--teal-soft:rgba(18,160,160,.16);--gold:#c49a62;--gold-soft:rgba(196,154,98,.16);
+  --shadow:0 2px 12px rgba(0,0,0,.35);
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Raleway',sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;cursor:pointer;color:inherit}
+[hidden]{display:none!important}
+
+/* ── ANIMACIONES ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes inR{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+@keyframes draw{from{stroke-dasharray:0 400}}
+@keyframes rise{from{height:0}}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes fill{from{width:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-300px 0}100%{background-position:300px 0}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.wrap{max-width:720px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+
+/* ── HEADER ── */
+header{background:linear-gradient(135deg,var(--teal) 0%,var(--sage) 140%);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 0;position:sticky;top:0;z-index:30;box-shadow:0 3px 14px rgba(0,0,0,.18)}
+.h-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.seal{width:58px;height:58px;flex-shrink:0;animation:spin 32s linear infinite}
+.h-txt{flex:1;min-width:0}
+.h-title{font-size:21px;font-weight:800;letter-spacing:-.01em;line-height:1.1}
+.h-sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:3px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h-actions{display:flex;gap:7px}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.17);color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .1s}
+.icon-btn:active{background:rgba(255,255,255,.32);transform:scale(.92)}
+.icon-btn.spinning{animation:spin .8s linear infinite}
+.tabs{display:flex;gap:4px;background:rgba(0,0,0,.16);border-radius:99px;padding:4px;margin-bottom:12px}
+.tab{flex:1;padding:9px 8px;border:none;border-radius:99px;background:none;color:rgba(255,255,255,.72);font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;transition:all .2s}
+.tab.on{background:#fff;color:var(--teal-d);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+
+main{flex:1;padding:14px 14px 40px;overflow-x:hidden}
+.aviso{font-size:12.5px;font-weight:600;color:var(--gold);background:var(--gold-soft);border-radius:10px;padding:8px 12px;margin-bottom:12px;text-align:center}
+.chips{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:8px 15px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-size:13px;font-weight:700;transition:all .18s}
+.chip.on{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 3px 10px rgba(0,128,128,.3)}
+.view{animation:fadeUp .4s both}
+.view.inR{animation:inR .32s both}
+.view.inL{animation:inL .32s both}
+
+/* ── NAVEGACIÓN ── */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.nav-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:17px;box-shadow:var(--shadow);transition:transform .1s}
+.nav-btn:active{transform:scale(.9)}
+.nav-btn:disabled{opacity:.3;box-shadow:none}
+.nav-c{flex:1;text-align:center}
+.nav-t{font-size:17px;font-weight:800;line-height:1.2}
+.nav-s{font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;min-height:16px}
+.nav-s button{border:none;background:var(--teal-soft);color:var(--teal);border-radius:99px;padding:3px 11px;font-size:11.5px;font-weight:700}
+
+/* ── TARJETAS ── */
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeUp .5s both;animation-delay:var(--d,0ms)}
+.label{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:22px 4px 10px}
+.hero{display:flex;align-items:center;gap:18px}
+.donut{width:136px;height:136px;flex-shrink:0;position:relative}
+.donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+.donut .arc{fill:none;stroke-width:14;animation:draw 1s cubic-bezier(.2,.8,.2,1) both}
+.donut .base{fill:none;stroke:var(--card2);stroke-width:14}
+.donut-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-c b{font-size:36px;font-weight:800;line-height:1;animation:pop .6s both}
+.donut-c span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.legend{flex:1;display:flex;flex-direction:column;gap:12px}
+.lg{display:flex;align-items:center;gap:10px}
+.lg i{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.lg b{font-size:22px;font-weight:800;min-width:30px}
+.lg span{font-size:13px;font-weight:600;color:var(--muted)}
+
+.star{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--gold-soft),var(--card));border-color:var(--gold)}
+.star-ic{width:46px;height:46px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;animation:pop .7s .2s both}
+.star-k{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.star-n{font-size:18px;font-weight:800;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
+.star-s{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:3px}
+
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center;box-shadow:var(--shadow);animation:fadeUp .5s both;animation-delay:var(--d,0ms)}
+.kpi b{display:block;font-size:26px;font-weight:800;line-height:1.1}
+.kpi span{display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:5px;line-height:1.3}
+.kpi.big{grid-column:span 3;display:flex;align-items:center;justify-content:space-between;text-align:left;padding:16px 18px;background:linear-gradient(135deg,var(--teal),var(--sage));border:none;color:#fff}
+.kpi.big b{font-size:42px}
+.kpi.big span{color:rgba(255,255,255,.82);margin:0}
+.kpi.big em{font-style:normal;font-size:13px;font-weight:600;text-align:right;line-height:1.4;max-width:55%}
+
+/* ── BARRAS ── */
+.bl-row{padding:10px 0;border-bottom:1px solid var(--line)}
+.bl-row:last-child{border-bottom:none;padding-bottom:2px}
+.bl-row:first-child{padding-top:2px}
+.bl-top{display:flex;justify-content:space-between;gap:10px;font-size:14.5px;font-weight:700}
+.bl-lab{overflow-wrap:anywhere}
+.bl-val{flex-shrink:0;color:var(--teal)}
+.bl-val small{color:var(--muted);font-weight:600;font-size:12px}
+.bl-track{height:7px;background:var(--card2);border-radius:99px;margin-top:7px;overflow:hidden}
+.bl-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--mint));border-radius:99px;animation:fill .9s cubic-bezier(.2,.8,.2,1) both}
+.bl-sub{font-size:12px;color:var(--muted);margin-top:5px;font-weight:500}
+
+.d7{display:flex;align-items:flex-end;gap:7px;height:112px}
+.d7 button{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;background:none;border:none;padding:0}
+.d7 .col{width:100%;max-width:34px;border-radius:7px 7px 3px 3px;background:var(--mint);transform-origin:bottom;animation:grow .7s cubic-bezier(.2,.8,.2,1) both;min-height:3px}
+.d7 .col.z{background:var(--line)}
+.d7 .sel .col{background:var(--teal)}
+.d7 .hoy .col{background:var(--gold)}
+.d7 b{font-size:12px;font-weight:800;height:15px}
+.d7 em{font-style:normal;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase}
+.d7 .sel em{color:var(--teal)}
+
+/* ── LISTA DEL DÍA ── */
+.entry{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:8px;box-shadow:var(--shadow);animation:fadeUp .45s both;animation-delay:var(--d,0ms)}
+.e-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.e-prod{font-size:15.5px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+.e-qty{color:var(--teal);font-weight:800}
+.badge{flex-shrink:0;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:99px;white-space:nowrap}
+.badge.c{background:var(--gold-soft);color:var(--gold)}
+.badge.b{background:var(--teal-soft);color:var(--teal)}
+.e-meta{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.5;overflow-wrap:anywhere;font-weight:500}
+.e-note{font-size:12.5px;margin-top:5px;font-style:italic}
+
+/* ── PODIO ── */
+.podio{display:flex;align-items:flex-end;justify-content:center;gap:10px;padding-top:6px}
+.pod-c{flex:1;max-width:130px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.pod-n{font-size:12.5px;font-weight:700;line-height:1.25;margin-bottom:6px;overflow-wrap:anywhere;min-height:32px;display:flex;align-items:flex-end;justify-content:center}
+.pod-b{width:100%;border-radius:12px 12px 4px 4px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:8px;color:#fff;animation:rise .8s cubic-bezier(.2,.8,.2,1) both;height:var(--h)}
+.pod-b b{font-size:24px;font-weight:800;line-height:1}
+.pod-b span{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.9;margin-top:3px}
+.p1 .pod-b{background:linear-gradient(180deg,var(--gold),#8a6a40)}
+.p2 .pod-b{background:linear-gradient(180deg,var(--sage),#46685f)}
+.p3 .pod-b{background:linear-gradient(180deg,var(--teal),var(--teal-d))}
+
+/* ── RANKING CON DETALLE ── */
+details.rk{border-bottom:1px solid var(--line);padding:2px 0}
+details.rk:last-child{border-bottom:none}
+details.rk summary{list-style:none;padding:10px 0;cursor:pointer}
+details.rk summary::-webkit-details-marker{display:none}
+.rk-top{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:700}
+.rk-n{width:24px;height:24px;border-radius:50%;background:var(--teal-soft);color:var(--teal);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rk-name{flex:1;overflow-wrap:anywhere}
+.rk-v{color:var(--teal);flex-shrink:0}
+.rk-ch{color:var(--muted);transition:transform .2s;font-size:11px}
+details[open] .rk-ch{transform:rotate(180deg)}
+.rk-body{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 12px 34px;animation:fadeUp .3s both}
+.dchip{border:1px solid var(--line);background:var(--card2);border-radius:99px;padding:5px 11px;font-size:12px;font-weight:700}
+.dchip b{color:var(--teal)}
+
+/* ── CALENDARIO DE CALOR ── */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-h{font-size:11px;font-weight:800;color:var(--muted);text-align:center;padding-bottom:3px}
+.hc{aspect-ratio:1;border-radius:10px;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--card2);color:var(--text);animation:pop .4s both;animation-delay:var(--d,0ms);transition:transform .1s}
+.hc:active{transform:scale(.9)}
+.hc small{font-size:10px;font-weight:800;opacity:.9;line-height:1}
+.hc.l1{background:var(--mint);color:var(--ink)}
+.hc.l2{background:#6fb7b1;color:#fff}
+.hc.l3{background:var(--teal);color:#fff}
+.hc.l4{background:var(--teal-d);color:#fff}
+.hc.hoy{outline:2.5px solid var(--gold);outline-offset:1px}
+.hc.fut{opacity:.35}
+.hc.lun{opacity:.55}
+.hc.blank{background:none;animation:none}
+.cal-note{font-size:11.5px;color:var(--muted);margin-top:10px;text-align:center;font-weight:500}
+
+/* ── VARIOS ── */
+.empty{text-align:center;padding:44px 20px;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:16px;animation:fadeUp .5s both}
+.empty b{display:block;font-size:16px;color:var(--text);margin-bottom:5px}
+.err{background:#fdf0ef;border:1px solid #f0c0bb;color:var(--danger);border-radius:14px;padding:16px;font-size:14px;font-weight:700;text-align:center;margin-bottom:14px}
+html.dark .err{background:rgba(192,57,43,.18);border-color:rgba(192,57,43,.45)}
+.err button{margin-top:10px;background:var(--danger);color:#fff;border:none;border-radius:99px;padding:9px 18px;font-weight:700}
+.sk{height:84px;border-radius:16px;margin-bottom:14px;background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:600px 100%;animation:shimmer 1.3s linear infinite;border:1px solid var(--line)}
+.foot{text-align:center;font-size:12px;color:var(--muted);margin-top:28px;font-weight:600;line-height:1.5}
+.foot svg{display:block;margin:0 auto 8px;opacity:.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="h-top">
+      <svg class="seal" viewBox="0 0 120 120" aria-hidden="true">
+        <defs><path id="sp" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"/></defs>
+        <circle cx="60" cy="60" r="57" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.75)" stroke-width="1.5"/>
+        <text font-family="Raleway,sans-serif" font-size="9.4" font-weight="700" fill="#fff" letter-spacing="1.2" textLength="276" lengthAdjust="spacing"><textPath href="#sp">historias y un café · desayuno &amp; brunch · </textPath></text>
+        <g fill="none" stroke="#fff" stroke-width="2.2">
+          <ellipse cx="60" cy="49" rx="9" ry="15"/>
+          <ellipse cx="60" cy="49" rx="9" ry="15" transform="rotate(120 60 60)"/>
+          <ellipse cx="60" cy="49" rx="9" ry="15" transform="rotate(240 60 60)"/>
+        </g>
+      </svg>
+      <div class="h-txt">
+        <div class="h-title">Waste</div>
+        <div class="h-sub" id="h-sub">Cocina + Coffee bar</div>
+      </div>
+      <div class="h-actions">
+        <button class="icon-btn" id="btn-refresh" onclick="cargar(true)" aria-label="Actualizar">⟳</button>
+        <button class="icon-btn" id="btn-theme" onclick="cambiarTema()" aria-label="Cambiar tema">🌙</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab on" id="tab-dia" onclick="irVista('dia')">Día</button>
+      <button class="tab" id="tab-mes" onclick="irVista('mes')">Mes</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="chips" id="chips"></div>
+    <div id="aviso"></div>
+    <div id="view" class="view"></div>
+    <div class="foot">
+      <svg viewBox="0 0 36 36" fill="none" width="26" height="26"><g stroke="currentColor" stroke-width="1.6"><ellipse cx="18" cy="13" rx="3.6" ry="6.2"/><ellipse cx="18" cy="13" rx="3.6" ry="6.2" transform="rotate(120 18 18)"/><ellipse cx="18" cy="13" rx="3.6" ry="6.2" transform="rotate(240 18 18)"/></g></svg>
+      Encantados de la vida y agradecidos de poder servirles.
+    </div>
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+//  CONFIGURACIÓN: pega aquí la URL de tu implementación de Apps Script
+//  (termina en /exec). Es la ÚNICA línea que tienes que editar.
+// ═══════════════════════════════════════════════════════════════════════════
+const API_URL = 'PEGA_AQUI_LA_URL_EXEC';
+
+const COPIA_KEY = 'hyc-waste-v1';       // copia local: se muestra al instante mientras se actualiza
+const COPIA_HORAS = 24;
+
+const state = {
+  recentRaw: [], olderRaw: [], olderListo: false,
+  todas: [], hoy: '', from: '',
+  vista: 'dia', dia: '', mes: '', filtro: 'todos',
+  cargando: false, error: '', aviso: '', actualizado: '', sig: ''
+};
+
+// ── API ─────────────────────────────────────────────────────────────────────
+// Content-Type text/plain evita el preflight de CORS que Apps Script no responde.
+async function api(fn, ...args) {
+  const r = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ fn: fn, args: args }),
+    credentials: 'omit'
+  });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'Error del servidor');
+  return j.data;
+}
+
+// ── UTILIDADES ──────────────────────────────────────────────────────────────
+const ORIGEN = { C: 'Cocina', B: 'Coffee bar' };
+function esc(s) {
+  return String(s === null || s === undefined ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+function utc(ymd) { const p = ymd.split('-'); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])); }
+function ymdDe(d) { return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0'); }
+function addDias(ymd, n) { const d = utc(ymd); d.setUTCDate(d.getUTCDate() + n); return ymdDe(d); }
+function addMeses(ym, n) { const p = ym.split('-'); const d = new Date(Date.UTC(+p[0], +p[1] - 1 + n, 1)); return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0'); }
+function diasDelMes(ym) { const p = ym.split('-'); return new Date(Date.UTC(+p[0], +p[1], 0)).getUTCDate(); }
+function diaSemana(ymd) { return utc(ymd).getUTCDay(); }   // 0 = domingo
+function fechaLarga(ymd) { return cap(new Date(ymd + 'T12:00:00').toLocaleDateString('es-PR', { weekday: 'long', day: 'numeric', month: 'long' })); }
+function fechaCorta(ymd) { return new Date(ymd + 'T12:00:00').toLocaleDateString('es-PR', { day: 'numeric', month: 'short' }).replace('.', ''); }
+function mesLargo(ym) { return cap(new Date(ym + '-01T12:00:00').toLocaleDateString('es-PR', { month: 'long', year: 'numeric' })); }
+function letraDia(ymd) { return ['D', 'L', 'M', 'M', 'J', 'V', 'S'][diaSemana(ymd)]; }
+function horaMin(h) {
+  const m = String(h || '').match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!m) return -1;
+  let hh = (+m[1]) % 12;
+  if (m[3].toUpperCase() === 'PM') hh += 12;
+  return hh * 60 + (+m[2]);
+}
+function tieneQty(r) { return r.c !== '' && r.c !== null && r.c !== undefined; }
+function qtyTexto(r) { return tieneQty(r) ? (r.c + ' ' + (r.u || '')).trim() : ''; }
+function filas() { return state.todas.filter(r => state.filtro === 'todos' || r.o === state.filtro); }
+function norm(a) { return { f: a[0], h: a[1], o: ORIGEN[a[2]] || a[2], p: a[3], c: a[4], u: a[5], r: a[6], w: a[7], g: a[8], n: a[9] }; }
+function recalcular() { state.todas = state.recentRaw.concat(state.olderRaw).map(norm); }
+function fechaMin() { let m = ''; state.todas.forEach(r => { if (!m || r.f < m) m = r.f; }); return m; }
+function limiteInf() {
+  const base = state.from + '-01';
+  if (!state.olderListo) return base;
+  const m = fechaMin();
+  return (m && m < base) ? m : base;
+}
+function firma() {
+  const l = state.todas[state.todas.length - 1];
+  return state.todas.length + '|' + (l ? l.f + l.p + l.c : '');
+}
+function sumaCant(rows) {
+  let n = 0;
+  rows.forEach(r => { if (tieneQty(r)) n += Number(r.c); });
+  return n;
+}
+function agrupar(lista, claveFn, etiquetaFn) {
+  const mapa = {};
+  lista.forEach(r => {
+    const k = claveFn(r);
+    if (!mapa[k]) mapa[k] = { label: etiquetaFn(r), count: 0, unidades: {}, dias: {}, rows: [] };
+    const g = mapa[k];
+    g.count++;
+    g.rows.push(r);
+    g.dias[r.f] = (g.dias[r.f] || 0) + 1;
+    if (tieneQty(r)) { const u = r.u || 'uds'; g.unidades[u] = (g.unidades[u] || 0) + Number(r.c); }
+  });
+  return Object.keys(mapa).map(k => mapa[k]).sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+}
+function subCantidades(item) {
+  return Object.keys(item.unidades).map(u => (Math.round(item.unidades[u] * 100) / 100) + ' ' + u).join(' + ');
+}
+
+// ── TEMA ────────────────────────────────────────────────────────────────────
+function aplicarTema(oscuro) {
+  document.documentElement.classList.toggle('dark', !!oscuro);
+  const b = document.getElementById('btn-theme');
+  if (b) b.textContent = oscuro ? '☀️' : '🌙';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', oscuro ? '#0d8484' : '#008080');
+}
+function cambiarTema() {
+  const oscuro = !document.documentElement.classList.contains('dark');
+  aplicarTema(oscuro);
+  try { localStorage.setItem('hyc-waste-tema', oscuro ? 'oscuro' : 'claro'); } catch (e) {}
+}
+(function initTema() {
+  let t = null;
+  try { t = localStorage.getItem('hyc-waste-tema'); } catch (e) {}
+  const oscuro = t ? t === 'oscuro' : !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  aplicarTema(oscuro);
+})();
+
+// ── COPIA LOCAL ─────────────────────────────────────────────────────────────
+function guardarCopia() {
+  try {
+    localStorage.setItem(COPIA_KEY, JSON.stringify({
+      t: Date.now(), hoy: state.hoy, from: state.from,
+      recent: state.recentRaw, older: state.olderRaw, olderListo: state.olderListo
+    }));
+  } catch (e) {}
+}
+function leerCopia() {
+  try {
+    const c = JSON.parse(localStorage.getItem(COPIA_KEY) || 'null');
+    if (!c || !c.recent || Date.now() - c.t > COPIA_HORAS * 3600 * 1000) return false;
+    state.recentRaw = c.recent;
+    state.olderRaw = c.older || [];
+    state.olderListo = !!c.olderListo;
+    state.hoy = c.hoy;
+    state.from = c.from;
+    recalcular();
+    state.dia = c.hoy;
+    state.mes = c.hoy.slice(0, 7);
+    state.aviso = 'Copia guardada · actualizando…';
+    return true;
+  } catch (e) { return false; }
+}
+
+// ── CARGA POR FASES ─────────────────────────────────────────────────────────
+function horaAhora() { return new Date().toLocaleTimeString('es-PR', { hour: 'numeric', minute: '2-digit' }); }
+
+async function cargar(manual) {
+  if (state.cargando) return;
+  state.cargando = true;
+  document.getElementById('btn-refresh').classList.add('spinning');
+  try {
+    // Fase 1: mes actual y anterior
+    const rec = await api('getRecentData', !!manual);
+    const sigAntes = state.sig;
+    const seguiaHoy = !state.dia || state.dia === state.hoy;
+    state.recentRaw = rec.rows;
+    state.hoy = rec.hoy;
+    state.from = rec.from;
+    if (seguiaHoy) state.dia = rec.hoy;
+    if (!state.mes) state.mes = rec.hoy.slice(0, 7);
+    recalcular();
+    state.sig = firma();
+    state.error = '';
+    state.aviso = state.olderListo ? '' : 'Cargando meses anteriores…';
+    state.actualizado = horaAhora();
+    if (manual || state.sig !== sigAntes || !sigAntes || state.aviso) render();
+    else pintarCabecera();
+    guardarCopia();
+
+    // Fase 2: meses anteriores, en segundo plano
+    if (!state.olderListo || manual) {
+      try {
+        const old = await api('getOlderData');
+        state.olderRaw = old.rows;
+        state.olderListo = true;
+        recalcular();
+        state.sig = firma();
+        state.aviso = '';
+        render();
+        guardarCopia();
+      } catch (e) {
+        state.aviso = 'No pude cargar los meses anteriores.';
+        render();
+      }
+    }
+  } catch (e) {
+    if (state.todas.length) { state.aviso = 'Sin conexión. Mostrando la copia guardada.'; state.error = ''; }
+    else { state.error = 'No pude conectar con el servidor.'; state.aviso = ''; }
+    render();
+  }
+  state.cargando = false;
+  document.getElementById('btn-refresh').classList.remove('spinning');
+}
+setInterval(() => { if (document.visibilityState === 'visible') cargar(false); }, 5 * 60 * 1000);
+
+// ── NAVEGACIÓN ──────────────────────────────────────────────────────────────
+function irVista(v) { state.vista = v; render(); window.scrollTo(0, 0); }
+function setFiltro(f) { state.filtro = f; render(); }
+function irDia(ymd) { state.dia = ymd; state.mes = ymd.slice(0, 7); state.vista = 'dia'; render(); window.scrollTo(0, 0); }
+function irHoy() { state.dia = state.hoy; state.mes = state.hoy.slice(0, 7); render(); }
+function mueveDia(n) {
+  const nuevo = addDias(state.dia, n);
+  if (nuevo > state.hoy || nuevo < limiteInf()) return;
+  state.dia = nuevo;
+  state.mes = nuevo.slice(0, 7);
+  render(n);
+}
+function mueveMes(n) {
+  const nuevo = addMeses(state.mes, n);
+  if (nuevo > state.hoy.slice(0, 7) || nuevo < limiteInf().slice(0, 7)) return;
+  state.mes = nuevo;
+  render(n);
+}
+
+// Deslizar a los lados cambia de día o de mes
+let sx = 0, sy = 0, sTarget = null;
+document.addEventListener('touchstart', e => {
+  if (e.touches.length !== 1) return;
+  sx = e.touches[0].clientX; sy = e.touches[0].clientY; sTarget = e.target;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  if (!sTarget || (sTarget.closest && sTarget.closest('.chips'))) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - sx, dy = t.clientY - sy;
+  if (Math.abs(dx) > 70 && Math.abs(dy) < 45) {
+    const dir = dx < 0 ? 1 : -1;
+    if (state.vista === 'dia') mueveDia(dir); else mueveMes(dir);
+  }
+}, { passive: true });
+
+// ── RENDER ──────────────────────────────────────────────────────────────────
+function pintarCabecera() {
+  document.getElementById('h-sub').textContent = state.actualizado ? 'Cocina + Coffee bar · ' + state.actualizado : 'Cocina + Coffee bar';
+}
+
+function render(dir) {
+  document.getElementById('tab-dia').classList.toggle('on', state.vista === 'dia');
+  document.getElementById('tab-mes').classList.toggle('on', state.vista === 'mes');
+  pintarCabecera();
+
+  const opciones = [['todos', 'Todos'], ['Cocina', 'Cocina'], ['Coffee bar', 'Coffee bar']];
+  document.getElementById('chips').innerHTML = opciones
+    .map(o => `<button class="chip ${state.filtro === o[0] ? 'on' : ''}" onclick="setFiltro('${o[0]}')">${o[1]}</button>`).join('');
+  document.getElementById('aviso').innerHTML = state.aviso ? `<div class="aviso">${esc(state.aviso)}</div>` : '';
+
+  const v = document.getElementById('view');
+  let html = '';
+  if (state.error) {
+    html = `<div class="err">${esc(state.error)}<br><button onclick="cargar(true)">Reintentar</button></div>`;
+  } else if (!state.hoy) {
+    html = '<div class="sk"></div><div class="sk" style="height:150px"></div><div class="sk"></div>';
+  } else {
+    html = state.vista === 'dia' ? vistaDia() : vistaMes();
+  }
+  v.className = 'view' + (dir ? (dir > 0 ? ' inR' : ' inL') : '');
+  v.innerHTML = html;
+  animarNumeros();
+}
+
+function animarNumeros() {
+  const els = document.querySelectorAll('[data-count]');
+  els.forEach(el => {
+    const fin = Number(el.getAttribute('data-count'));
+    if (!fin || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) { el.textContent = fin; return; }
+    const t0 = performance.now(), dur = 750;
+    const paso = t => {
+      const p = Math.min(1, (t - t0) / dur);
+      el.textContent = Math.round(fin * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(paso);
+    };
+    el.textContent = '0';
+    requestAnimationFrame(paso);
+  });
+}
+
+// ── PIEZAS ──────────────────────────────────────────────────────────────────
+function barrasLista(items, max, conCantidad) {
+  if (!items.length) return `<div class="bl-row"><div class="bl-sub">Sin datos</div></div>`;
+  const tope = items[0].count;
+  return items.slice(0, max).map((it, i) => {
+    const sub = conCantidad ? subCantidades(it) : '';
+    return `<div class="bl-row">
+      <div class="bl-top"><span class="bl-lab">${esc(it.label)}</span><span class="bl-val">${it.count}</span></div>
+      <div class="bl-track"><div class="bl-fill" style="width:${Math.max(5, Math.round(it.count / tope * 100))}%;animation-delay:${i * 60}ms"></div></div>
+      ${sub ? `<div class="bl-sub">${esc(sub)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function donut(c, b) {
+  const R = 52, C = 2 * Math.PI * R, total = c + b;
+  let arcs = '';
+  if (total) {
+    const lc = C * c / total, lb = C * b / total;
+    if (c) arcs += `<circle class="arc" cx="70" cy="70" r="${R}" stroke="var(--gold)" style="stroke-dasharray:${lc.toFixed(2)} ${C.toFixed(2)}"/>`;
+    if (b) arcs += `<circle class="arc" cx="70" cy="70" r="${R}" stroke="var(--teal)" style="stroke-dasharray:${lb.toFixed(2)} ${C.toFixed(2)};stroke-dashoffset:${(-lc).toFixed(2)};animation-delay:.15s"/>`;
+  }
+  return `<div class="donut"><svg viewBox="0 0 140 140"><circle class="base" cx="70" cy="70" r="${R}"/>${arcs}</svg>
+    <div class="donut-c"><b data-count="${total}">${total}</b><span>registros</span></div></div>`;
+}
+
+function kpiGrid(lista) {
+  const c = lista.filter(r => r.o === 'Cocina').length;
+  const b = lista.filter(r => r.o === 'Coffee bar').length;
+  return { c: c, b: b };
+}
+
+// ── VISTA DÍA ───────────────────────────────────────────────────────────────
+function vistaDia() {
+  const dia = state.dia;
+  const esHoy = dia === state.hoy;
+  const lista = filas().filter(r => r.f === dia).sort((a, b) => horaMin(b.h) - horaMin(a.h));
+  const k = kpiGrid(lista);
+
+  let html = `<div class="nav">
+    <button class="nav-btn" onclick="mueveDia(-1)" ${dia <= limiteInf() ? 'disabled' : ''}>‹</button>
+    <div class="nav-c"><div class="nav-t">${esc(fechaLarga(dia))}</div>
+      <div class="nav-s">${esHoy ? 'Hoy' : `<button onclick="irHoy()">Ir a hoy</button>`}</div></div>
+    <button class="nav-btn" onclick="mueveDia(1)" ${dia >= state.hoy ? 'disabled' : ''}>›</button>
+  </div>`;
+
+  if (!lista.length) {
+    html += `<div class="card hero" style="--d:0ms">${donut(0, 0)}<div class="legend">
+      <div class="lg"><i style="background:var(--gold)"></i><b>0</b><span>Cocina</span></div>
+      <div class="lg"><i style="background:var(--teal)"></i><b>0</b><span>Coffee bar</span></div></div></div>`;
+    html += `<div class="empty"><b>Sin waste registrado</b>${esHoy ? 'Todavía no hay registros hoy.' : 'No hubo registros este día.'}</div>`;
+    html += ultimos7(dia);
+    return html;
+  }
+
+  html += `<div class="card hero">${donut(k.c, k.b)}<div class="legend">
+    <div class="lg"><i style="background:var(--gold)"></i><b data-count="${k.c}">${k.c}</b><span>Cocina</span></div>
+    <div class="lg"><i style="background:var(--teal)"></i><b data-count="${k.b}">${k.b}</b><span>Coffee bar</span></div></div></div>`;
+
+  // Mayor pérdida del día
+  const prods = agrupar(lista, r => r.p.toLowerCase(), r => cap(r.p)).sort((a, b) => b.count - a.count || sumaCant(b.rows) - sumaCant(a.rows));
+  const top = prods[0];
+  const topSub = [top.count + (top.count === 1 ? ' registro' : ' registros'), subCantidades(top)].filter(Boolean).join(' · ');
+  html += `<div class="card star" style="--d:80ms"><div class="star-ic">🔥</div><div>
+    <div class="star-k">Mayor pérdida del día</div><div class="star-n">${esc(top.label)}</div><div class="star-s">${esc(topSub)}</div></div></div>`;
+
+  // Por responsable (con acumulado del mes hasta ese día)
+  const mesFilas = filas().filter(r => r.f.slice(0, 7) === dia.slice(0, 7) && r.f <= dia);
+  const resp = agrupar(lista, r => (r.w || 'Sin responsable').toLowerCase(), r => r.w || 'Sin responsable');
+  const mesPorResp = {};
+  mesFilas.forEach(r => { const k2 = (r.w || 'Sin responsable').toLowerCase(); mesPorResp[k2] = (mesPorResp[k2] || 0) + 1; });
+  html += `<div class="label">Por responsable</div><div class="card" style="--d:120ms">`;
+  const topR = resp[0].count;
+  html += resp.map((it, i) => {
+    const acum = mesPorResp[it.label.toLowerCase()] || it.count;
+    return `<div class="bl-row">
+      <div class="bl-top"><span class="bl-lab">${esc(it.label)}</span><span class="bl-val">${it.count} <small>· mes ${acum}</small></span></div>
+      <div class="bl-track"><div class="bl-fill" style="width:${Math.max(5, Math.round(it.count / topR * 100))}%;animation-delay:${i * 60}ms"></div></div></div>`;
+  }).join('');
+  html += `</div>`;
+
+  // Por razón
+  const razones = agrupar(lista, r => (r.r || 'Sin razón').toLowerCase(), r => cap(r.r || 'Sin razón'));
+  html += `<div class="label">Por razón</div><div class="card" style="--d:160ms">${barrasLista(razones, 8, false)}</div>`;
+
+  html += ultimos7(dia);
+
+  // Registros
+  html += `<div class="label">Registros del día (${lista.length})</div>`;
+  lista.forEach((r, i) => {
+    const qty = qtyTexto(r);
+    const meta = [r.w ? 'Responsable: ' + r.w : '', r.r || 'Sin razón', r.g ? 'Registró ' + r.g : '', r.h].filter(Boolean).join(' · ');
+    html += `<div class="entry" style="--d:${Math.min(i, 12) * 40}ms">
+      <div class="e-top"><div class="e-prod">${esc(r.p)}${qty ? ` <span class="e-qty">(${esc(qty)})</span>` : ''}</div>
+        <span class="badge ${r.o === 'Cocina' ? 'c' : 'b'}">${esc(r.o)}</span></div>
+      <div class="e-meta">${esc(meta)}</div>
+      ${r.n ? `<div class="e-note">${esc(r.n)}</div>` : ''}
+    </div>`;
+  });
+  return html;
+}
+
+function ultimos7(dia) {
+  const todas = filas();
+  const dias = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = addDias(dia, -i);
+    if (d > state.hoy) continue;
+    dias.push({ d: d, n: todas.filter(r => r.f === d).length });
+  }
+  const max = Math.max.apply(null, dias.map(x => x.n).concat([1]));
+  let h = `<div class="label">Últimos 7 días</div><div class="card" style="--d:200ms"><div class="d7">`;
+  dias.forEach((x, i) => {
+    const alto = x.n ? Math.max(10, Math.round(x.n / max * 78)) : 3;
+    h += `<button class="${x.d === dia ? 'sel' : ''} ${x.d === state.hoy ? 'hoy' : ''}" onclick="irDia('${x.d}')" aria-label="${esc(fechaCorta(x.d))}: ${x.n}">
+      <b>${x.n || ''}</b><div class="col ${x.n ? '' : 'z'}" style="height:${alto}px;animation-delay:${i * 60}ms"></div><em>${letraDia(x.d)}</em></button>`;
+  });
+  return h + `</div></div>`;
+}
+
+// ── VISTA MES ───────────────────────────────────────────────────────────────
+function diasAbiertos(ym, hasta) {
+  // El café cierra los lunes: el promedio se calcula por día abierto.
+  let n = 0;
+  for (let d = 1; d <= hasta; d++) { if (diaSemana(ym + '-' + String(d).padStart(2, '0')) !== 1) n++; }
+  return n;
+}
+
+function podio(items) {
+  const top = items.slice(0, 3);
+  if (!top.length) return '';
+  const orden = top.length === 1 ? [0] : top.length === 2 ? [1, 0] : [1, 0, 2];
+  const alto = { 0: 104, 1: 78, 2: 58 };
+  return `<div class="podio">` + orden.map(i => {
+    const it = top[i];
+    return `<div class="pod-c p${i + 1}"><div class="pod-n">${esc(it.label)}</div>
+      <div class="pod-b" style="--h:${alto[i]}px;animation-delay:${(2 - i) * 120}ms"><b>${it.count}</b><span>${i + 1}.º</span></div></div>`;
+  }).join('') + `</div>`;
+}
+
+function calendario(ym, mesRows) {
+  const n = diasDelMes(ym);
+  const porDia = {};
+  mesRows.forEach(r => { porDia[r.f] = (porDia[r.f] || 0) + 1; });
+  const max = Math.max.apply(null, Object.keys(porDia).map(k => porDia[k]).concat([1]));
+  let h = `<div class="cal">` + ['D', 'L', 'M', 'M', 'J', 'V', 'S'].map(l => `<div class="cal-h">${l}</div>`).join('');
+  const vacios = diaSemana(ym + '-01');
+  for (let i = 0; i < vacios; i++) h += `<div class="hc blank"></div>`;
+  for (let d = 1; d <= n; d++) {
+    const ymd = ym + '-' + String(d).padStart(2, '0');
+    const cnt = porDia[ymd] || 0;
+    const nivel = cnt ? Math.min(4, Math.ceil(cnt / max * 4)) : 0;
+    const cls = ['hc', 'l' + nivel, ymd === state.hoy ? 'hoy' : '', ymd > state.hoy ? 'fut' : '', diaSemana(ymd) === 1 ? 'lun' : ''].join(' ');
+    h += `<button class="${cls}" style="--d:${d * 12}ms" onclick="irDia('${ymd}')" aria-label="${esc(fechaCorta(ymd))}: ${cnt}">${d}${cnt ? `<small>${cnt}</small>` : ''}</button>`;
+  }
+  return h + `</div><div class="cal-note">Más oscuro = más registros · el lunes el café está cerrado</div>`;
+}
+
+function vistaMes() {
+  const todas = filas();
+  const ym = state.mes;
+  const mes = todas.filter(r => r.f.slice(0, 7) === ym);
+  const enCurso = ym === state.hoy.slice(0, 7);
+  const tope = enCurso ? Number(state.hoy.slice(8, 10)) : diasDelMes(ym);
+  const prevYm = addMeses(ym, -1);
+  const prev = todas.filter(r => r.f.slice(0, 7) === prevYm && Number(r.f.slice(8, 10)) <= tope);
+  const prevCubierto = prevYm >= limiteInf().slice(0, 7);
+  const k = kpiGrid(mes);
+
+  const puedeAtras = prevYm >= limiteInf().slice(0, 7);
+  let html = `<div class="nav">
+    <button class="nav-btn" onclick="mueveMes(-1)" ${puedeAtras ? '' : 'disabled'}>‹</button>
+    <div class="nav-c"><div class="nav-t">${esc(mesLargo(ym))}</div>
+      <div class="nav-s">${!state.olderListo && !puedeAtras ? 'Cargando meses anteriores…' : (enCurso ? 'Mes en curso' : '')}</div></div>
+    <button class="nav-btn" onclick="mueveMes(1)" ${enCurso ? 'disabled' : ''}>›</button>
+  </div>`;
+
+  const dif = mes.length - prev.length;
+  const vs = enCurso ? 'el mismo tramo del mes anterior' : 'el mes anterior';
+  const difTxt = !prevCubierto ? 'Sin datos del mes anterior.'
+    : dif === 0 ? `Igual que ${vs} (${prev.length}).`
+    : `${Math.abs(dif)} ${dif > 0 ? 'más' : 'menos'} que ${vs} (${prev.length}).`;
+  html += `<div class="kpis">
+    <div class="kpi big" style="--d:0ms"><div><b data-count="${mes.length}">${mes.length}</b><span>registros en el mes</span></div><em>${esc(difTxt)}</em></div>`;
+
+  const abiertos = diasAbiertos(ym, tope);
+  const prom = abiertos ? (mes.length / abiertos) : 0;
+  const porDia = {};
+  mes.forEach(r => { porDia[r.f] = (porDia[r.f] || 0) + 1; });
+  let peor = '', peorN = 0;
+  Object.keys(porDia).sort().forEach(d => { if (porDia[d] > peorN) { peorN = porDia[d]; peor = d; } });
+  html += `<div class="kpi" style="--d:60ms"><b>${prom.toFixed(1)}</b><span>Promedio por día abierto</span></div>
+    <div class="kpi" style="--d:120ms"><b>${peor ? esc(fechaCorta(peor)) : '–'}</b><span>Día con más waste${peorN ? ' (' + peorN + ')' : ''}</span></div>
+    <div class="kpi" style="--d:180ms"><b>${k.c} · ${k.b}</b><span>Cocina · Coffee bar</span></div></div>`;
+
+  if (!mes.length) return html + `<div class="empty"><b>Sin waste este mes</b>No hay registros para mostrar.</div>`;
+
+  const prods = agrupar(mes, r => r.p.toLowerCase(), r => cap(r.p));
+  html += `<div class="label">Los que más se pierden</div><div class="card" style="--d:100ms">${podio(prods)}</div>`;
+
+  html += `<div class="label">Calendario de calor</div><div class="card" style="--d:140ms">${calendario(ym, mes)}</div>`;
+
+  const resp = agrupar(mes, r => (r.w || 'Sin responsable').toLowerCase(), r => r.w || 'Sin responsable');
+  const topR = resp[0].count;
+  html += `<div class="label">Por responsable (toca para ver los días)</div><div class="card" style="--d:180ms">`;
+  html += resp.map((it, i) => {
+    const dias = Object.keys(it.dias).sort().reverse().map(d => `<button class="dchip" onclick="irDia('${d}')">${esc(fechaCorta(d))} · <b>${it.dias[d]}</b></button>`).join('');
+    return `<details class="rk"><summary><div class="rk-top"><span class="rk-n">${i + 1}</span><span class="rk-name">${esc(it.label)}</span><span class="rk-v">${it.count}</span><span class="rk-ch">▼</span></div>
+      <div class="bl-track" style="margin-left:34px"><div class="bl-fill" style="width:${Math.max(5, Math.round(it.count / topR * 100))}%;animation-delay:${i * 60}ms"></div></div></summary>
+      <div class="rk-body">${dias}</div></details>`;
+  }).join('') + `</div>`;
+
+  const razones = agrupar(mes, r => (r.r || 'Sin razón').toLowerCase(), r => cap(r.r || 'Sin razón'));
+  html += `<div class="label">Por razón</div><div class="card" style="--d:220ms">${barrasLista(razones, 8, false)}</div>`;
+
+  html += `<div class="label">Productos (con cantidades)</div><div class="card" style="--d:260ms">${barrasLista(prods, 12, true)}</div>`;
+  return html;
+}
+
+// ── INICIO ──────────────────────────────────────────────────────────────────
+(function inicio() {
+  if (leerCopia()) { state.sig = firma(); }
+  render();
+  cargar(false);
+})();
+</script>
+</body>
+</html>
